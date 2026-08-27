@@ -17,7 +17,6 @@ import {
   Calendar,
   Mail,
   Clock,
-  ChevronRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { Application, ApplicationHistory } from "@/types";
@@ -65,7 +64,7 @@ export function JobCandidatesPage() {
   const { id } = useParams<{ id: string }>();
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
-  const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [updatingId] = useState<string | null>(null);
 
   const [confirmTarget, setConfirmTarget] = useState<{
     app: Application;
@@ -170,13 +169,16 @@ export function JobCandidatesPage() {
         ) : (
             <div className="space-y-3">
             {applications.map((app) => {
-              const name = app.jobSeeker?.fullName || app.jobSeeker?.email;
+              const name = app.jobSeeker?.fullName || app.jobSeeker?.email || "";
               const initials = name
-                .split(" ")
-                .map((w) => w[0])
-                .join("")
-                .slice(0, 2)
-                .toUpperCase();
+                ? name
+                    .trim()
+                    .split(/\s+/)
+                    .map((w) => w[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase()
+                : "?";
 
               return (
                 <div key={app.id} className="liquid-glass rounded-xl p-4">
