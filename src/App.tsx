@@ -1,21 +1,59 @@
-import { Button } from "@/components/ui/button"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "@/lib/auth-context";
+import { HomePage } from "@/pages/HomePage";
+import { LoginPage } from "@/pages/LoginPage";
+import { RegisterPage } from "@/pages/RegisterPage";
+import { JobsPage } from "@/pages/JobsPage";
+import { MyApplicationsPage } from "@/pages/MyApplicationsPage";
+import { CompanyJobsPage } from "@/pages/CompanyJobsPage";
+import { JobCandidatesPage } from "@/pages/JobCandidatesPage";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 export function App() {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
-    </div>
-  )
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/jobs"
+            element={
+              <ProtectedRoute>
+                <JobsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-applications"
+            element={
+              <ProtectedRoute allowedRoles={["JOB_SEEKER"]}>
+                <MyApplicationsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/company/jobs"
+            element={
+              <ProtectedRoute allowedRoles={["COMPANY"]}>
+                <CompanyJobsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/company/jobs/:id/candidates"
+            element={
+              <ProtectedRoute allowedRoles={["COMPANY"]}>
+                <JobCandidatesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
